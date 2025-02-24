@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Email Ingestion App
 
-## Getting Started
+## Overview
+This application retrieves emails from configured inboxes (IMAP, POP3, Outlook/Graph API), downloads PDF attachments, and stores metadata in a PostgreSQL database. The UI allows users to configure email accounts, manage settings, and trigger email retrieval.
 
-First, run the development server:
+## Features
+- Supports IMAP, POP3, Outlook API for fetching emails.
+- Extracts and saves PDF attachments to the `./pdfs/` directory.
+- Stores metadata in PostgreSQL using Prisma ORM.
+- Next.js UI for managing email configurations.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Project Structure
+```
+EMAIL-INGESTION-APP/
+│── node_modules/
+│── pdfs/                  # Stores downloaded PDFs
+│── prisma/
+│   ├── migrations/        # Prisma migrations
+│   ├── schema.prisma      # Database schema
+│── public/
+│── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── email-config/
+│   │   │   │   ├── route.ts  # API to configure email settings
+│   │   │   ├── email-ingestion/
+│   │   │   │   ├── route.ts  # API to fetch emails & store PDFs
+│   │   ├── email-config/
+│   │   │   ├── page.tsx      # UI for email configuration
+│   │   ├── email-ingestion/
+│   │   │   ├── page.tsx      # UI for email ingestion
+│   ├── components/
+│   │   ├── EmailConfigForm.tsx
+│   │   ├── EmailList.tsx
+│   ├── scripts/
+│   ├── utils/
+│   │   ├── emailHandler.ts   # Handles email retrieval & PDF storage
+│   │   ├── prismaClient.ts   # Prisma client instance
+│── .env
+│── .gitignore
+│── package.json
+│── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Installation & Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1️⃣ Clone the Repository
+```bash
+git clone <https://github.com/smohit24/EMAIL-INGESTION-APP.git>
+cd EMAIL-INGESTION-APP
+```
 
-## Learn More
+### 2️⃣ Install Dependencies
+```bash
+npm install
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3️⃣ Set Up Environment Variables
+Create a `.env` file in the project root:
+```ini
+DATABASE_URL=postgresql://postgres:mohit@24@localhost:5432/email_db
+EMAIL_USER=mohit.s1724@gmail.com
+EMAIL_PASSWORD=lytc hxih ovnu jamx
+EMAIL_HOST=imap.gmail.com
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4️⃣ Run Database Migrations
+```bash
+npx prisma migrate dev --name init
+npx prisma studio
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 5️⃣ Start the Development Server
+```bash
+npm run dev
+```
 
-## Deploy on Vercel
+### 6️⃣ Access the UI
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Testing
+### ✅ Verify Email Ingestion
+1. Send a test email to your configured email address with a **PDF attachment**.
+2. Click the **Check Inbox** button in the UI or wait for automatic polling.
+3. Confirm the PDF appears in the `./pdfs/` folder.
+4. Check the PostgreSQL database for a new record in the `EmailMetadata` table.
+
+```sql
+SELECT * FROM "EmailMetadata";
+```
+
+---
+
+## Constraints & Notes
+- **Security:** Store email credentials in `.env` or the Prisma database. No encryption is required for this test.
+- **Error Handling:** Logs errors for invalid email credentials and attachment issues.
+- **UI Simplicity:** Displays configured emails and allows adding/editing. A button triggers inbox checking.
+
+---
+
+### 📜 README:
+Include clear setup and run instructions.
+
+
